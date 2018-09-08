@@ -10,3 +10,4 @@
 void fatal(const char *func);
 
 int msg_pub(const char *d, int sz_d);
+int msg_pub(const char *d);
