@@ -8,8 +8,6 @@
 #include <pubsub.h>
 #include <pipeline.h>
 
-
-#define NANOSUB "nanosub"
 #define CLIENT_ADDR "ipc:///tmp/pubsub_client.ipc"
 
 void fatal(const char *func)
@@ -50,10 +48,10 @@ int msg_sub(const char *topic)
 int main(const int argc, const char **argv)
 {
     
-        if ((argc >= 2) && (strcmp(NANOSUB, argv[1]) == 0))
+        if (argc >= 2)
         {
-            msg_sub(argv[2]);
-		}
+            msg_sub(argv[1]);
+	}
 	
 		
         //fprintf(stderr, "Usage: pubsub %s|%s <URL> <ARG> ...\n",
