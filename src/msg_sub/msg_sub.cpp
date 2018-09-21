@@ -10,51 +10,118 @@
 
 #define CLIENT_ADDR "ipc:///tmp/pubsub_client.ipc"
 
+using namespace std;
+
 void fatal(const char *func)
 {
-        fprintf(stderr, "%s: %s\n", func, nn_strerror(nn_errno()));
+    fprintf(stderr, "%s: %s\n", func, nn_strerror(nn_errno()));
+}
+
+template<typename U> U msg_sub(const U &msg, const char *topic)
+{
+    int sock;
+    if ((sock = nn_socket(AF_SP, NN_SUB)) < 0) 
+	{
+		fatal("nn_socket");
+	}
+
+    int sz_topic = strlen(topic); 
+    if (nn_setsockopt(sock, NN_SUB, NN_SUB_SUBSCRIBE, topic, sz_topic) < 0) 
+	{
+        fatal("nn_setsockopt");
+    }
+	if (nn_connect(sock, CLIENT_ADDR) < 0) 
+	{
+        fatal("nn_connet");
+    }
+    for (;;) 
+	{
+		char *buf = NULL;
+        int bytes = nn_recv(sock, &buf, NN_MSG, 0);
+        if (bytes < 0) 
+		{
+        	fatal("nn_recv");
+        }
+		printf("CLIENT: RECEIVED %s\n", buf);
+
+		//google::protobuf::Message *msg;
+
+		int i = 0;
+		int j = 0;
+		for (i = 0;i < NN_MSG;i++)
+		{
+			if (buf[i] = '|')
+			{
+				j = i + 1;
+				break;
+			}
+		}
+		msg->ParseFromArray(buf + j, 4096 - j);
+		
+		printf("CLIENT: RECEIVED %d\n", msg); 
+        nn_freemsg(buf);
+        }
 }
 
 int msg_sub(const char *topic)
 {
-        int sock;
+    int sock;
+    if ((sock = nn_socket(AF_SP, NN_SUB)) < 0) 
+	{
+		fatal("nn_socket");
+	}
 
-        if ((sock = nn_socket(AF_SP, NN_SUB)) < 0) {
-                fatal("nn_socket");
+    int sz_topic = strlen(topic); 
+    if (nn_setsockopt(sock, NN_SUB, NN_SUB_SUBSCRIBE, topic, sz_topic) < 0) 
+	{
+        fatal("nn_setsockopt");
+    }
+	if (nn_connect(sock, CLIENT_ADDR) < 0) 
+	{
+        fatal("nn_connet");
+    }
+    for (;;) 
+	{
+		char *buf = NULL;
+        int bytes = nn_recv(sock, &buf, NN_MSG, 0);
+        if (bytes < 0) 
+		{
+        	fatal("nn_recv");
         }
+		printf("CLIENT: RECEIVED %s\n", buf);
 
-        // subscribe to everything ("" means all topics)
-        int sz_topic = strlen(topic); 
-        
-        if (nn_setsockopt(sock, NN_SUB, NN_SUB_SUBSCRIBE, topic, sz_topic) < 0) {
-                fatal("nn_setsockopt");
-        }
-        
-        if (nn_connect(sock, CLIENT_ADDR) < 0) {
-                fatal("nn_connet");
-        }
-        for (;;) {
-        		
-                char *buf = NULL;
-                int bytes = nn_recv(sock, &buf, NN_MSG, 0);
-                if (bytes < 0) {
-                        fatal("nn_recv");
-                }
-                printf("CLIENT: RECEIVED %s\n", buf); 
-                nn_freemsg(buf);
+		google::protobuf::Message *msg;
+
+		int i = 0;
+		int j = 0;
+		for (i = 0;i < NN_MSG;i++)
+		{
+			if (buf[i] = '|')
+			{
+				j = i + 1;
+				break;
+			}
+		}
+		parse(msg, buf, j);
+		
+		printf("CLIENT: RECEIVED %d\n", msg); 
+        nn_freemsg(buf);
         }
 }
 
+//google::protobuf::Message *T;
+template<typename T> void parse(const T &msg, const char *topic, int j)
+{
+	msg->ParseFromArray(topic + j, 4096 - j);
+}
+
+
 int main(const int argc, const char **argv)
 {
-    
-        if (argc >= 2)
-        {
-            msg_sub(argv[1]);
+    if (argc >= 1)
+    {
+        msg_sub(argv[1]);
 	}
 	
-		
-        //fprintf(stderr, "Usage: pubsub %s|%s <URL> <ARG> ...\n",
-        //    SERVER, CLIENT);
-        return 1;
+	return 1;
 }

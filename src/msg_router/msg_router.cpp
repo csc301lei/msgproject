@@ -7,6 +7,8 @@
 #include <nn.h>
 #include <pubsub.h>
 #include <pipeline.h>
+#include <reqrep.h>
+#include <pthread.h>
 
 #define CLIENT "client"
 #define ROUTER "router"
@@ -20,7 +22,45 @@ void fatal(const char *func)
         fprintf(stderr, "%s: %s\n", func, nn_strerror(nn_errno()));
 }
 
-int router()
+char topic_name[1000];
+
+void * checkname(void * a)
+{
+    int sock;
+    int rv;
+    if ((sock = nn_socket(AF_SP, NN_REP)) < 0) {
+                fatal("nn_socket");
+    }
+    if ((rv = nn_bind(sock, "ipc:///tmp/checkname.ipc")) < 0) {
+        fatal("nn_bind");
+    }
+    
+    
+    for (;;) 
+    {
+        char *buf = NULL;
+        int bytes;
+        if ((bytes = nn_recv(sock, &buf, NN_MSG, 0)) < 0) 
+        {
+            fatal("nn_recv");
+        }
+        if(strstr(topic_name, buf) == NULL)
+        {
+            strcat(topic_name, buf);
+            printf("topic_name: %s\n", topic_name);
+            nn_send(sock, "new", 3, 0);
+        }
+        else{
+            nn_send(sock, "exist", 5, 0);
+        }
+    }
+}
+
+
+
+
+
+void *  router(void * a)
 {
 	int frontend;
     if ((frontend = nn_socket(AF_SP, NN_SUB)) < 0) 
@@ -55,13 +95,27 @@ int router()
    		printf("backend: %s\n", buf); 
    		nn_freemsg(buf);
    	}
+    nn_close(frontend);
+    nn_close(backend);
+
 }
 
 int main(const int argc, const char **argv)
 {	
-		//if ((argc >= 2) && (strcmp(ROUTER, argv[1]) == 0))
-        //{
-            router();
-		//}
-        //return 1;
+    pthread_t router1;
+	pthread_t checkname1;
+	if( pthread_create (&checkname1, NULL, checkname, NULL) !=0 )
+    {
+        printf("thread getaddr failede\n");
+        exit(1);
+    }
+	if(pthread_create (&router1, NULL, router, NULL) != 0 )
+    {
+        printf("thread router failede\n");
+        exit(1);
+    }
+	
+    pthread_join (checkname1, NULL);
+    pthread_join (router1, NULL);
+    return 1;
 }
