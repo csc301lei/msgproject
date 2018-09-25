@@ -58,8 +58,7 @@ int msg_pub(const char * d, google::protobuf::Message &msg){
     //    return 0;
     //}
 
-    int bytes;
-       
+    
     int sock;
     if ((sock = nn_socket(AF_SP, NN_PUB)) < 0) 
     {
@@ -70,8 +69,8 @@ int msg_pub(const char * d, google::protobuf::Message &msg){
         fatal("nn_connect");
     }
     //printf("msgpub ok1\n");
-    for (;;) 
-    {
+    //for (;;) 
+    //{
         char buf[4096];
         int sz_d = strlen(d);
         char protodata[4048];
@@ -79,25 +78,25 @@ int msg_pub(const char * d, google::protobuf::Message &msg){
         sprintf(buf, "%s%c%s", d, '|', protodata);
         int len = sz_d + msg.ByteSize() + 1;
         //printf("sz_d is %d, msg.ByteSize() is %d, len is %d.\n", sz_d, msg.ByteSize(), len);
-        printf("SERVER: PUBLISHING %s\n",buf);
+        //printf("SERVER: PUBLISHING %s\n",buf);
         int bytes = nn_send(sock, buf, len, 0);
         if (bytes < 0)
         {
             fatal("nn_send");
         }
         sleep(1);
-    }
-    return nn_shutdown(sock, 0);
+    //}
+    nn_close(sock);
+    //return nn_shutdown(sock, 0);
 }
 
 int msg_pub(const char *d)
 {    
-    if( if_named_topic(d) )
-    {
-        printf("Topic name exist! Please rename your topic or longer it…\n");
-        return 0;
-    }
-        int bytes;
+    //if( if_named_topic(d) )
+    //{
+    //    printf("Topic name exist! Please rename your topic or longer it…\n");
+    //    return 0;
+    //}
         
         int sock;
         if ((sock = nn_socket(AF_SP, NN_PUB)) < 0) 
@@ -109,18 +108,19 @@ int msg_pub(const char *d)
             fatal("nn_connect");
         }
         
-        for (;;) 
-        {
+        //for (;;) 
+        //{
             int sz_d = strlen(d) + 1; // '\0' too
-            printf("SERVER: PUBLISHING %s\n",d);
+            //printf("SERVER: PUBLISHING %s\n",d);
             int bytes = nn_send(sock, d, sz_d, 0);
             if (bytes < 0) 
             {
                 fatal("nn_send");
             }
             sleep(1);
-        }
-        return nn_shutdown(sock, 0);
+        //}
+        nn_close(sock);
+    //return nn_shutdown(sock, 0);
 }
 
 

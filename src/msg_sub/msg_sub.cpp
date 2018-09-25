@@ -17,6 +17,7 @@ void fatal(const char *func)
     fprintf(stderr, "%s: %s\n", func, nn_strerror(nn_errno()));
 }
 
+//template<typename U> U msg_sub( google::protobuf::Message *U , const char *topic )
 template<typename U> U msg_sub(const U &msg, const char *topic)
 {
     int sock;
@@ -58,9 +59,10 @@ template<typename U> U msg_sub(const U &msg, const char *topic)
 		}
 		msg->ParseFromArray(buf + j, 4096 - j);
 		
-		printf("CLIENT: RECEIVED %d\n", msg); 
+		printf("CLIENT: RECEIVED ok\n"); 
         nn_freemsg(buf);
-        }
+    }
+	nn_close(sock);
 }
 
 int msg_sub(const char *topic)
@@ -88,7 +90,7 @@ int msg_sub(const char *topic)
 		{
         	fatal("nn_recv");
         }
-		printf("CLIENT: RECEIVED %s\n", buf);
+		//printf("CLIENT: RECEIVED %s\n", buf);
 
 		google::protobuf::Message *msg;
 
@@ -104,12 +106,14 @@ int msg_sub(const char *topic)
 		}
 		parse(msg, buf, j);
 		
-		printf("CLIENT: RECEIVED %d\n", msg); 
+		printf("CLIENT: RECEIVED ok\n"); 
         nn_freemsg(buf);
-        }
+    }
+	nn_close(sock);
 }
 
 //google::protobuf::Message *T;
+//template<typename T> void parse(google::protobuf::Message *T, const char *topic, int j)
 template<typename T> void parse(const T &msg, const char *topic, int j)
 {
 	msg->ParseFromArray(topic + j, 4096 - j);
