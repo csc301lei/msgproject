@@ -52,11 +52,11 @@ bool if_named_topic(const char *topic)
 
 int msg_pub(const char * d, google::protobuf::Message &msg){
 	
-    if( if_named_topic(d) )
-    {
-        printf("Topic name exist! Please rename your topic or longer it…\n");
-        return 0;
-    }
+    //if( if_named_topic(d) )
+    //{
+    //    printf("Topic name exist! Please rename your topic or longer it…\n");
+    //    return 0;
+    //}
 
     int bytes;
        
@@ -78,14 +78,14 @@ int msg_pub(const char * d, google::protobuf::Message &msg){
         msg.SerializeToArray(protodata, 4048);
         sprintf(buf, "%s%c%s", d, '|', protodata);
         int len = sz_d + msg.ByteSize() + 1;
-        printf("sz_d is %d, msg.ByteSize() is %d, len is %d.\n", sz_d, msg.ByteSize(), len);
-        printf("SERVER: PUBLISHING %s\n",d);
+        //printf("sz_d is %d, msg.ByteSize() is %d, len is %d.\n", sz_d, msg.ByteSize(), len);
+        printf("SERVER: PUBLISHING %s\n",buf);
         int bytes = nn_send(sock, buf, len, 0);
         if (bytes < 0)
         {
             fatal("nn_send");
         }
-        //sleep(1);
+        sleep(1);
     }
     return nn_shutdown(sock, 0);
 }
@@ -118,7 +118,7 @@ int msg_pub(const char *d)
             {
                 fatal("nn_send");
             }
-            //sleep(1);
+            sleep(1);
         }
         return nn_shutdown(sock, 0);
 }
