@@ -43,7 +43,7 @@ template<typename U> U msg_sub(const U &msg, const char *topic)
 		{
         	fatal("nn_recv");
         }
-		printf("CLIENT: RECEIVED %s\n", buf);
+		//printf("CLIENT: RECEIVED %s\n", buf);
 
 		//google::protobuf::Message *msg;
 

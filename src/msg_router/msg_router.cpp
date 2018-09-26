@@ -89,10 +89,12 @@ void *  router(void * a)
     {
     	char *buf = NULL;
         nn_recv(frontend, &buf, NN_MSG, 0);
-        printf("frontend: %s\n", buf); 
+        //printf("frontend: %s\n", buf); 
+        printf("frontend: ok\n"); 
    	 	int sz_buf = strlen(buf) + 1;
   		nn_send(backend, buf, sz_buf, 0);
-   		printf("backend: %s\n", buf); 
+   		//printf("backend: %s\n", buf); 
+        printf("backend: ok\n");
    		nn_freemsg(buf);
    	}
     nn_close(frontend);
