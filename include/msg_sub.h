@@ -18,5 +18,7 @@ int msg_sub(const char *topic);
 //template<typename U> U msg_sub( google::protobuf::Message *U , const char *topic );
 //template<typename T> void parse(google::protobuf::Message *T, const char *topic, int j);
 
-template<typename U> U msg_sub(const U &msg, const char *topic);
+template<typename U> U msg_sub(const char *topic, const U &msg);
 template<typename T> void parse(const T &msg, const char *topic, int j);
+int msg_sub(const char *topic, const char *data);
+int msg_sub(const char *topic);

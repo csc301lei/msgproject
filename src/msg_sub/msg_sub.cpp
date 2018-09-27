@@ -18,7 +18,7 @@ void fatal(const char *func)
 }
 
 //template<typename U> U msg_sub( google::protobuf::Message *U , const char *topic )
-template<typename U> U msg_sub(const U &msg, const char *topic)
+template<typename U> U msg_sub(const char *topic, const U &msg)
 {
     int sock;
     if ((sock = nn_socket(AF_SP, NN_SUB)) < 0) 
@@ -35,15 +35,15 @@ template<typename U> U msg_sub(const U &msg, const char *topic)
 	{
         fatal("nn_connet");
     }
-    for (;;) 
-	{
+    //for (;;) 
+	//{
 		char *buf = NULL;
         int bytes = nn_recv(sock, &buf, NN_MSG, 0);
         if (bytes < 0) 
 		{
         	fatal("nn_recv");
         }
-		//printf("CLIENT: RECEIVED %s\n", buf);
+		printf("CLIENT: RECEIVED %s\n", buf);
 
 		//google::protobuf::Message *msg;
 
@@ -61,10 +61,15 @@ template<typename U> U msg_sub(const U &msg, const char *topic)
 		
 		printf("CLIENT: RECEIVED ok\n"); 
         nn_freemsg(buf);
-    }
+    //}
 	nn_close(sock);
 }
 
+/*
+template<typename T> void parse(const T &msg, const char *topic, int j)
+{
+	msg->ParseFromArray(topic + j, 4096 - j);
+}
 int msg_sub(const char *topic)
 {
     int sock;
@@ -90,7 +95,7 @@ int msg_sub(const char *topic)
 		{
         	fatal("nn_recv");
         }
-		//printf("CLIENT: RECEIVED %s\n", buf);
+		printf("CLIENT: RECEIVED %s\n", buf);
 
 		google::protobuf::Message *msg;
 
@@ -111,14 +116,35 @@ int msg_sub(const char *topic)
     }
 	nn_close(sock);
 }
-
-//google::protobuf::Message *T;
-//template<typename T> void parse(google::protobuf::Message *T, const char *topic, int j)
-template<typename T> void parse(const T &msg, const char *topic, int j)
+*/
+int msg_sub(const char *topic, const char *data)
 {
-	msg->ParseFromArray(topic + j, 4096 - j);
-}
+    int sock;
+    if ((sock = nn_socket(AF_SP, NN_SUB)) < 0) 
+	{
+		fatal("nn_socket");
+	}
 
+    int sz_topic = strlen(topic); 
+    if (nn_setsockopt(sock, NN_SUB, NN_SUB_SUBSCRIBE, topic, sz_topic) < 0) 
+	{
+        fatal("nn_setsockopt");
+    }
+	if (nn_connect(sock, CLIENT_ADDR) < 0) 
+	{
+        fatal("nn_connet");
+    }
+    //for (;;) 
+	//{
+        int bytes = nn_recv(sock, &data, NN_MSG, 0);
+        if (bytes < 0) 
+		{
+        	fatal("nn_recv");
+        }
+		printf("CLIENT: RECEIVED %s\n", data);
+    //}
+	nn_close(sock);
+}
 
 int main(const int argc, const char **argv)
 {

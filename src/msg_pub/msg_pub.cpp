@@ -11,6 +11,7 @@
 #include <pthread.h>
 
 #define ROUTER_ADDR "tcp://127.0.0.1:19001"
+#define CHECK_NAME "ipc:///tmp/checkname.ipc"
 
 using namespace std;
 //std::string topiclist[];
@@ -30,7 +31,7 @@ bool if_named_topic(const char *topic)
     if ((sock = nn_socket(AF_SP, NN_REQ)) < 0) {
         fatal("nn_socket");
     }
-    if ((rv = nn_connect (sock, "ipc:///tmp/checkname.ipc")) < 0) {
+    if ((rv = nn_connect (sock, CHECK_NAME)) < 0) {
         fatal("nn_connect");
     }
     if ((bytes = nn_send(sock, topic, sz_topic, 0)) < 0) {
@@ -50,8 +51,8 @@ bool if_named_topic(const char *topic)
     }
 }
 
-int msg_pub(const char * d, google::protobuf::Message &msg){
-	
+int msg_pub(const char * d, google::protobuf::Message &msg)
+{
     //if( if_named_topic(d) )
     //{
     //    printf("Topic name exist! Please rename your topic or longer it…\n");
@@ -78,7 +79,7 @@ int msg_pub(const char * d, google::protobuf::Message &msg){
         sprintf(buf, "%s%c%s", d, '|', protodata);
         int len = sz_d + msg.ByteSize() + 1;
         //printf("sz_d is %d, msg.ByteSize() is %d, len is %d.\n", sz_d, msg.ByteSize(), len);
-        //printf("SERVER: PUBLISHING %s\n",buf);
+        printf("SERVER: PUBLISHING %s\n",buf);
         int bytes = nn_send(sock, buf, len, 0);
         if (bytes < 0)
         {
@@ -87,7 +88,44 @@ int msg_pub(const char * d, google::protobuf::Message &msg){
         sleep(1);
     //}
     nn_close(sock);
-    //return nn_shutdown(sock, 0);
+}
+int nanopub(const char *topic, const char *d)
+{    
+    if( if_named_topic(topic) )
+    {
+        printf("Topic name exist! Please rename your topic or longer it…\n");
+        return 0;
+    }
+    
+    int bytes;
+        
+    int sock;
+    if ((sock = nn_socket(AF_SP, NN_PUB)) < 0) 
+    {
+         fatal("nn_socket");
+    }
+    if (nn_connect(sock, ROUTER_ADDR) < 0) 
+    {
+        fatal("nn_connect");
+    }
+    
+        
+    //for (;;) 
+    //{
+        int sz_topic = strlen(topic) + 1;
+        int sz_d = strlen(d); // '\0' too
+        int len = sz_topic + sz_d + 1;
+        char buf[100];
+        sprintf(buf,"%s%c%s",topic, '|', d);
+        printf("SERVER: PUBLISHING %s\n", buf);
+        int bytes = nn_send(sock, buf, len, 0);
+        if (bytes < 0) 
+        {
+            fatal("nn_send");
+        }
+        sleep(1);
+    //}
+    nn_close(sock);
 }
 
 int msg_pub(const char *d)
@@ -111,7 +149,7 @@ int msg_pub(const char *d)
         //for (;;) 
         //{
             int sz_d = strlen(d) + 1; // '\0' too
-            //printf("SERVER: PUBLISHING %s\n",d);
+            printf("SERVER: PUBLISHING %s\n",d);
             int bytes = nn_send(sock, d, sz_d, 0);
             if (bytes < 0) 
             {

@@ -13,6 +13,7 @@
 #define CLIENT "client"
 #define ROUTER "router"
 #define CLIENT_ADDR "ipc:///tmp/pubsub_client.ipc"
+#define CHECK_NAME "ipc:///tmp/checkname.ipc"
 //#define ROUTER_ADDR "ipc:///tmp/pubsub_router.ipc"
 #define ROUTER_ADDR "tcp://*:19001"
 
@@ -31,7 +32,7 @@ void * checkname(void * a)
     if ((sock = nn_socket(AF_SP, NN_REP)) < 0) {
                 fatal("nn_socket");
     }
-    if ((rv = nn_bind(sock, "ipc:///tmp/checkname.ipc")) < 0) {
+    if ((rv = nn_bind(sock, CHECK_NAME)) < 0) {
         fatal("nn_bind");
     }
     
@@ -47,6 +48,7 @@ void * checkname(void * a)
         if(strstr(topic_name, buf) == NULL)
         {
             strcat(topic_name, buf);
+            strcat(topic_name, "|");
             printf("topic_name: %s\n", topic_name);
             nn_send(sock, "new", 3, 0);
         }
@@ -56,11 +58,7 @@ void * checkname(void * a)
     }
 }
 
-
-
-
-
-void *  router(void * a)
+void * router(void * a)
 {
 	int frontend;
     if ((frontend = nn_socket(AF_SP, NN_SUB)) < 0) 
@@ -89,12 +87,12 @@ void *  router(void * a)
     {
     	char *buf = NULL;
         nn_recv(frontend, &buf, NN_MSG, 0);
-        //printf("frontend: %s\n", buf); 
-        printf("frontend: ok\n"); 
+        printf("frontend: %s\n", buf); 
+        //printf("frontend: ok\n"); 
    	 	int sz_buf = strlen(buf) + 1;
   		nn_send(backend, buf, sz_buf, 0);
-   		//printf("backend: %s\n", buf); 
-        printf("backend: ok\n");
+   		printf("backend: %s\n", buf); 
+        //printf("backend: ok\n");
    		nn_freemsg(buf);
    	}
     nn_close(frontend);
