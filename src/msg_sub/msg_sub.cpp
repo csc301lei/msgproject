@@ -145,7 +145,7 @@ int msg_sub(const char *topic, const char *data)
     //}
 	nn_close(sock);
 }
-
+/*
 int main(const int argc, const char **argv)
 {
     if (argc >= 1)
@@ -155,3 +155,4 @@ int main(const int argc, const char **argv)
 	
 	return 1;
 }
+*/

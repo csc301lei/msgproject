@@ -5,9 +5,9 @@
 #include <unistd.h>
 #include "msg_pub.h"
 #include <nn.h>
+#include <reqrep.h>
 #include <pubsub.h>
 #include <pipeline.h>
-#include <reqrep.h>
 #include <pthread.h>
 
 #define ROUTER_ADDR "tcp://127.0.0.1:19001"
@@ -89,7 +89,8 @@ int msg_pub(const char * d, google::protobuf::Message &msg)
     //}
     nn_close(sock);
 }
-int nanopub(const char *topic, const char *d)
+
+int msg_pub(const char *topic, const char *d)
 {    
     if( if_named_topic(topic) )
     {

@@ -5,9 +5,9 @@
 #include <unistd.h>
 //#include "router.h"
 #include <nn.h>
+#include <reqrep.h>
 #include <pubsub.h>
 #include <pipeline.h>
-#include <reqrep.h>
 #include <pthread.h>
 
 #define CLIENT "client"

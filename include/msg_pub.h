@@ -11,6 +11,6 @@
 
 void fatal(const char *func);
 
-int msg_pub(const char *d, int sz_d);
 int msg_pub(const char *d);
 int msg_pub(const char * d, google::protobuf::Message &msg);
+int msg_pub(const char *topic, const char *d)
