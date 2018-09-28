@@ -9,7 +9,7 @@
 #include <pubsub.h>
 #include <pipeline.h>
 #include <pthread.h>
-
+#include "fatal.h"
 #define CLIENT "client"
 #define ROUTER "router"
 #define CLIENT_ADDR "ipc:///tmp/pubsub_client.ipc"
@@ -17,11 +17,6 @@
 //#define ROUTER_ADDR "ipc:///tmp/pubsub_router.ipc"
 #define ROUTER_ADDR "tcp://*:19001"
 
-
-void fatal(const char *func)
-{
-        fprintf(stderr, "%s: %s\n", func, nn_strerror(nn_errno()));
-}
 
 char topic_name[1000];
 
@@ -88,16 +83,13 @@ void * router(void * a)
     	char *buf = NULL;
         nn_recv(frontend, &buf, NN_MSG, 0);
         printf("frontend: %s\n", buf); 
-        //printf("frontend: ok\n"); 
    	 	int sz_buf = strlen(buf) + 1;
   		nn_send(backend, buf, sz_buf, 0);
    		printf("backend: %s\n", buf); 
-        //printf("backend: ok\n");
    		nn_freemsg(buf);
    	}
     nn_close(frontend);
     nn_close(backend);
-
 }
 
 int main(const int argc, const char **argv)

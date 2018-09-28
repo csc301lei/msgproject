@@ -1,25 +1,9 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
 #include "msg_pub.h"
-#include <nn.h>
-#include <reqrep.h>
-#include <pubsub.h>
-#include <pipeline.h>
-#include <pthread.h>
 
 #define ROUTER_ADDR "tcp://127.0.0.1:19001"
 #define CHECK_NAME "ipc:///tmp/checkname.ipc"
 
 using namespace std;
-//std::string topiclist[];
-
-void fatal(const char *func)
-{
-    fprintf(stderr, "%s: %s\n", func, nn_strerror(nn_errno()));
-}
 
 bool if_named_topic(const char *topic)
 {
@@ -96,10 +80,7 @@ int msg_pub(const char *topic, const char *d)
     {
         printf("Topic name exist! Please rename your topic or longer it…\n");
         return 0;
-    }
-    
-    int bytes;
-        
+    }        
     int sock;
     if ((sock = nn_socket(AF_SP, NN_PUB)) < 0) 
     {

@@ -1,22 +1,10 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
 #include "msg_sub.h"
-#include <nn.h>
-#include <pubsub.h>
-#include <pipeline.h>
 
 #define CLIENT_ADDR "ipc:///tmp/pubsub_client.ipc"
 
 using namespace std;
 
-void fatal(const char *func)
-{
-    fprintf(stderr, "%s: %s\n", func, nn_strerror(nn_errno()));
-}
-
+/*
 //template<typename U> U msg_sub( google::protobuf::Message *U , const char *topic )
 template<typename U> U msg_sub(const char *topic, const U &msg)
 {
@@ -64,7 +52,7 @@ template<typename U> U msg_sub(const char *topic, const U &msg)
     //}
 	nn_close(sock);
 }
-
+*/
 /*
 template<typename T> void parse(const T &msg, const char *topic, int j)
 {

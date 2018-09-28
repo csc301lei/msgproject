@@ -11,7 +11,10 @@ ZZ_MODULE(
   NAME zzmsg
   TYPE SHARED
   VERSION ${ZZMSG_VERSION}
-  SOURCES ${MSGPROJECT_ROOT}/src/msg_pub
+  SOURCES 
+  		${MSGPROJECT_ROOT}/src/msg_pub
+  		${MSGPROJECT_ROOT}/src/msg_sub
+  		${MSGPROJECT_ROOT}/src/fatal
   INTERFACES ${MSGPROJECT_ROOT}/include
   PKG zzmsg
 )
@@ -21,18 +24,28 @@ ZZ_MODULE(
   TYPE APP
   SOURCES
     ${MSGPROJECT_ROOT}/src/msg_router
+    ${MSGPROJECT_ROOT}/src/fatal
   INCS ${MSGPROJECT_ROOT}/include/
   IDL  $ENV{HOVER_REPO_ROOT}/src/drone_platform/interface_definition/proto/configuration.proto
   PKG  msg_router
 )
 
 ZZ_MODULE(
-  NAME msg_sub
+  NAME testsub
   TYPE APP
   SOURCES
-    ${MSGPROJECT_ROOT}/src/msg_sub
-  INCS ${MSGPROJECT_ROOT}/include/
-  IDL  $ENV{HOVER_REPO_ROOT}/src/drone_platform/interface_definition/proto/configuration.proto
-  PKG  msg_sub
+    ${MSGPROJECT_ROOT}/src/testsub/testsub.cpp
+    ${MSGPROJECT_ROOT}/src/msg_sub/msg_sub.cpp
+    ${MSGPROJECT_ROOT}/src/fatal
+  INCS 
+  	${MSGPROJECT_ROOT}/include/
+  IDL  
+  		$ENV{HOVER_REPO_ROOT}/src/drone_platform/interface_definition/proto/configuration.proto
+  		$ENV{HOVER_REPO_ROOT}/src/drone_platform/interface_definition/proto/sensor.proto
+        $ENV{HOVER_REPO_ROOT}/src/drone_platform/interface_definition/proto/drone.proto
+        $ENV{HOVER_REPO_ROOT}/src/drone_platform/interface_definition/proto/base.proto
+  PKG  testsub
 )
+
+
 
