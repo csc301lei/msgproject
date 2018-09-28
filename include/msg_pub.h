@@ -12,6 +12,5 @@
 #include <google/protobuf/message.h>
 #include "fatal.h"
 
-int msg_pub(const char *d);
 int msg_pub(const char * d, google::protobuf::Message &msg);
 int msg_pub(const char *topic, const char *d);
